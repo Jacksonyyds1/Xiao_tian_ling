@@ -1,0 +1,27 @@
+{
+  "workspace": {
+    "path": "${workspaceFolder}\\prj\\DogCollar.eww"
+  },
+  "workspaces": {
+    "${workspaceFolder}\\bsp\\bootload\\src\\prj\\bootload.eww": {
+      "configs": {
+        "${workspaceFolder}\\bsp\\bootload\\src\\prj\\bootload.ewp": "Debug"
+      },
+      "selected": {
+        "path": "${workspaceFolder}\\bsp\\bootload\\src\\prj\\bootload.ewp"
+      }
+    },
+    "${workspaceFolder}\\prj\\DogCollar.eww": {
+      "configs": {
+        "${workspaceFolder}\\bsp\\bootload\\src\\prj\\bootload.ewp": "Debug",
+        "${workspaceFolder}\\prj\\DogCollar.ewp": "Debug"
+      },
+      "selected": {
+        "path": "${workspaceFolder}\\prj\\DogCollar.ewp"
+      }
+    }
+  },
+  "workbench": {
+    "path": "D:\\IAR"
+  }
+}

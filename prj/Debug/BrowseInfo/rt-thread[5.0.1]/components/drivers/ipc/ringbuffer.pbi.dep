@@ -1,0 +1,38 @@
+D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\Debug\BrowseInfo\rt-thread[5.0.1]\components\drivers\ipc\ringbuffer.pbi: \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\os\rt-thread5.0.1\components\drivers\ipc\ringbuffer.c \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\include\rtthread.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\app\rtconfig.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\include\rtdef.h \
+  D:\IAR\arm\inc\c\stdint.h D:\IAR\arm\inc\c\ycheck.h \
+  D:\IAR\arm\inc\c\yvals.h D:\IAR\arm\inc\c\DLib_Defaults.h \
+  D:\IAR\arm\inc\c\DLib_Config_Full.h D:\IAR\arm\inc\c\DLib_Product.h \
+  D:\IAR\arm\inc\c\stddef.h D:\IAR\arm\inc\c\ysizet.h \
+  D:\IAR\arm\inc\c\stdarg.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\libc\compilers\common\extension\sys\types.h \
+  D:\IAR\arm\inc\c\time.h D:\IAR\arm\inc\c\time64.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\include\rtservice.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\include\rtm.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\include\rtatomic.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\include\rthw.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\finsh\finsh.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\rtdevice.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\ipc\ringbuffer.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\ipc\completion.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\ipc\dataqueue.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\ipc\workqueue.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\ipc\waitqueue.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\ipc\pipe.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\ipc\poll.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\ipc\ringblk_buf.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\drivers\rtc.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\libc\compilers\common\include\sys\time.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\drivers\alarm.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\drivers\serial.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\drivers\i2c.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\drivers\i2c_dev.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\drivers\i2c-bit-ops.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\drivers\pin.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\drivers\adc.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\drivers\pm.h \
+  D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\prj\..\os\rt-thread5.0.1\components\drivers\include\drivers\lptimer.h \
+  D:\IAR\arm\inc\c\string.h D:\IAR\arm\inc\c\DLib_Product_string.h
