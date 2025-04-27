@@ -59,7 +59,7 @@ int esp_btser_send(u8_t *msg, u32_t msglen, void *arg)
     
     LOG_HEX("ble-send",16,(u8_t *)msg,msglen);
     rt_kprintf("esp_btser_send data\n");
-    
+    rt_kprintf("Current mode: %s\n", esp_ls_atmode() == ESP_MODE_SPP ? "SPP" : "AT");
     return esp_ble_send(service->sd, (void *)msg, msglen, 0);
 }
 /*
