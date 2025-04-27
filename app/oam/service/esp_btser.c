@@ -156,6 +156,7 @@ int esp_btser_init(void)
  * Description : 蓝牙连接spp模式发送函数
  * Input       : msg: 发送数据
  *               msglen: 发送数据长度
+ * author       : cjt
  ****************************************************************************/
 static int esp_ble_test_send(const char *msg, int msglen)
 {
@@ -184,7 +185,7 @@ static int esp_ble_test_send(const char *msg, int msglen)
  * Description : 发送测试数据函数
  * Input       : msg: 发送数据
  *             msglen: 发送数据长度
- * 
+ * author       : cjt
  ************************************************************************************/
 void send_test_data(void)
 {
@@ -220,6 +221,7 @@ MSH_CMD_EXPORT(send_test_data, send test data via BLE spp);
 *Output      :  
 *Return      :
 *Others      :
+*author       : cjt
 ********************************************************************************/
 
 void cmd_test_lan_protocol(int argc, char** argv)

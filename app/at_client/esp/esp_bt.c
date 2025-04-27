@@ -386,7 +386,21 @@ int esp_ble_send(int sd, u8_t *buf, u32_t len, void *arg)
     }
     
     if( esp_ls_atmode() == ESP_MODE_SPP ){
-        return -2;
+        rt_device_t uart_device = esp.client->device;
+        if(uart_device == RT_NULL)
+        {
+            rt_kprintf("Error: uart device is null!\n");
+            return -3;
+        }
+        rt_size_t written = rt_device_write(uart_device,0,buf,len);
+
+        if(written != len)
+        {
+            rt_kprintf("Warning: only %d bytes of %d butes sent\n", written, len);
+            return -4;
+        }
+        rt_kprintf("Current mode: %s\n", esp_ls_atmode() == ESP_MODE_SPP ? "SPP" : "AT");
+        return written;
     }
     
     msg = (socket_msg_t *)at_message_alloc(sizeof(socket_msg_t) + sizeof(ble_msg_t) + len);
