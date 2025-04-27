@@ -227,7 +227,7 @@ MSH_CMD_EXPORT(send_test_data, send test data via BLE spp);
 void cmd_test_lan_protocol(int argc, char** argv)
 {
     // 构造测试消息，注意完整包含帧尾
-    u8_t test_msg[] = {0xA5, 0x03, 0x01, 0x00, 0x03, 0x42, 0x45, 0x5A};
+    u8_t test_msg[] = {0xA5, 0x04, 0x01, 0x00, 0x03, 0x42, 0x4A, 0x5A};
     
     // 调用解析函数
     lan_analy(test_msg, sizeof(test_msg), BleMsg.from, NULL);

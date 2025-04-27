@@ -174,6 +174,15 @@ DEF_GETCMD_FN(MyCustomResponse)
     rt_kprintf("Sending custom response\n");
     return lan_send(BLUE_GET|BLUE_ACK, 0x42, response, strlen((char*)response), from);
 }
+static void cmd_test_lan_send(int argc,char** argv)
+{
+    u8_t response[64] = "Custom response data";
+    rt_kprintf("Sending custom response via MSH command\n");
+    
+    lan_lowlayer *from = esp_btser_send;
+    lan_send(BLUE_GET|BLUE_ACK, 0x42, response, strlen((char*)response), from);
+}
+MSH_CMD_EXPORT(cmd_test_lan_send, send test lan_send function);
 
 static const struct langet_cmd {
     char cmdid;

@@ -384,7 +384,7 @@ int esp_ble_send(int sd, u8_t *buf, u32_t len, void *arg)
     if (atomic_read(&esp.sockets[sd].used) != 1) {
         return -1;
     }
-    
+    //spp模式下发送数据
     if( esp_ls_atmode() == ESP_MODE_SPP ){
         rt_device_t uart_device = esp.client->device;
         if(uart_device == RT_NULL)
@@ -399,10 +399,9 @@ int esp_ble_send(int sd, u8_t *buf, u32_t len, void *arg)
             rt_kprintf("Warning: only %d bytes of %d butes sent\n", written, len);
             return -4;
         }
-        rt_kprintf("Current mode: %s\n", esp_ls_atmode() == ESP_MODE_SPP ? "SPP" : "AT");
         return written;
     }
-    
+    //AT 模式
     msg = (socket_msg_t *)at_message_alloc(sizeof(socket_msg_t) + sizeof(ble_msg_t) + len);
     if (msg == RT_NULL) {
         return -1;
