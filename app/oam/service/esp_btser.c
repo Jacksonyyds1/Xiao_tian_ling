@@ -189,7 +189,7 @@ static int esp_ble_test_send(const char *msg, int msglen)
  ************************************************************************************/
 void send_test_data(void)
 {
-    const char *test_msg = "Hello from BLE spp mode!\r\n";
+    const char *test_msg = "AT+GMR\r\n";
     int result;
 
     if(esp_ls_atmode() == ESP_MODE_SPP)
