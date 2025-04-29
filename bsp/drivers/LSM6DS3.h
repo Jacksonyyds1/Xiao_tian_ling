@@ -198,8 +198,8 @@ extern "C" {
 // 操作模式读/写
 typedef enum 
 {
-    eRead = 0u,
-    eWrite = 1u,
+    eRead = 1u,
+    eWrite = 0u,
 } OPmode_t;
 
 // 查询状态标志
