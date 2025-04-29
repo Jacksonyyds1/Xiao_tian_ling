@@ -69,7 +69,7 @@
     </SWOTraceHWSettings>
     <PlDriver>
         <FirstRun>0</FirstRun>
-        <MemConfigValue>C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\CONFIG\debugger\ST\STM32U575ZI.ddf</MemConfigValue>
+        <MemConfigValue>D:\IAR\arm\CONFIG\debugger\ST\STM32U575ZI.ddf</MemConfigValue>
     </PlDriver>
     <Jet>
         <DisableInterrupts>0</DisableInterrupts>

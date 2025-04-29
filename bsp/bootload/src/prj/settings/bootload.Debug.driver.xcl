@@ -6,7 +6,7 @@
 
 "-p" 
 
-"C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\CONFIG\debugger\ST\STM32U575ZI.ddf" 
+"D:\IAR\arm\CONFIG\debugger\ST\STM32U575ZI.ddf" 
 
 "--drv_verify_download" 
 

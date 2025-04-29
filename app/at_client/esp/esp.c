@@ -275,7 +275,7 @@ static rt_tick_t esp_status_monitor(void)
     monitor->fail_times = 0;
 
     //120S 后进行信号检测
-    timeout_tick = esp_tick_from_ms(30*000);
+    timeout_tick = esp_tick_from_ms(30*1000);
     esp_timer_start(monitor->timer, timeout_tick);
     LOG_D("ESP-AT configure ok");
     return timeout_tick;

@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "D:\work_rong\dog_cool\source\coolSrc\bsp\bootload\src\prj\settings\bootload.Debug.general.xcl" --backend -f "D:\work_rong\dog_cool\source\coolSrc\bsp\bootload\src\prj\settings\bootload.Debug.driver.xcl" 
+& "D:\IAR\common\bin\cspybat" -f "D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\bsp\bootload\src\prj\settings\bootload.Debug.general.xcl" --backend -f "D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\bsp\bootload\src\prj\settings\bootload.Debug.driver.xcl" 
 }
 else
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "D:\work_rong\dog_cool\source\coolSrc\bsp\bootload\src\prj\settings\bootload.Debug.general.xcl" --debug_file=$debugfile --backend -f "D:\work_rong\dog_cool\source\coolSrc\bsp\bootload\src\prj\settings\bootload.Debug.driver.xcl" 
+& "D:\IAR\common\bin\cspybat" -f "D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\bsp\bootload\src\prj\settings\bootload.Debug.general.xcl" --debug_file=$debugfile --backend -f "D:\Xiao_Tian_Ling\coolSrc_rong2\coolSrc\bsp\bootload\src\prj\settings\bootload.Debug.driver.xcl" 
 }

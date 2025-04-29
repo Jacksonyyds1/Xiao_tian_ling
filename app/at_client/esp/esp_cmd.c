@@ -400,7 +400,7 @@ int esp_gsm_detect(void)
     // AT_version
     AT_version = str;
     while (*str && *str != '\r') str++;
-    if (*str) *str++ = '\0'; //skip ','
+    if (*str) *str++ = '\0'; //Replace the carriage return with the end-of-string character and point to the next character
     
     // SDK_version
     SDK_version = strstr(str,"SDK version:")+strlen("SDK version:");

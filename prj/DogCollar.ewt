@@ -3315,6 +3315,9 @@
                 <name>$PROJ_DIR$\..\bsp\drivers\drv_gpio.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\bsp\drivers\drv_I2C.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\bsp\drivers\drv_lptim.c</name>
             </file>
             <file>
