@@ -22,6 +22,7 @@
 #include "at.h"
 #include "at_client.h"
 #include "esp.h"
+#include "esp_cmd.h" //modify by cjt 27-05-20025
 
 #define DBG_TAG "esp"
 #define DBG_LVL DBG_LOG   //DBG_LOG
@@ -42,8 +43,180 @@ extern esp_at_t esp;
 #define get_sta_ptr()       (&esp.wifista) 
 /*
 ********************************************************************************
+*wifi 热点信息结构体  27-05-2025
 ********************************************************************************
 */ 
+typedef struct{
+    char ssid[33];       // 热点名称
+    char bssid[18];      // Mac地址
+    int rssi;          // 信号强度
+    int channel;       // 信道
+    int auth_mode;     // 加密方式
+    time_t scan_time;  // 扫描时间戳
+} wifi_ap_info_t;
+/*
+********************************************************************************
+*wifi 扫描结果结构体  27-05-2025
+********************************************************************************
+*/
+typedef struct{
+    wifi_ap_info_t aps[20]; // 存储最多20个热点信息
+    int count;              //实际扫描到的热点数量
+    double latitude;         // 当前位置纬度（如果有GPS）
+    double longitude;        // 当前位置经度（如果有GPS）
+    char device_id[33]; // 设备ID
+} wifi_scan_result_t;
+/*
+********************************************************************************
+*Function    : esp_cwlap_scan_all
+*Description : 扫描所有可见的WiFi热点
+*Input       : result - 扫描结果存储结构体
+*Output      : 
+*Return      : 0 成功, -1 失败
+*Others      : Command: AT+CWLAP
+               Reply:   +CWLAP:(3,"SSID",-45,"MAC",6,-1,-1,4,4,7,0)   27-05-2025
+                        OK
+********************************************************************************
+*/
+int esp_cwlap_scan_all(wifi_scan_result_t *result)
+{
+    char tmpbuf[2048] = {0};
+    char *str , *line_start;
+    int ap_count = 0;
+    time_t current_time;
+
+    if(!result){
+        LOG_E("Invalid result pointer\n");
+        return -1;
+    }
+    memset(result, 0, sizeof(wifi_scan_result_t));
+
+    // 执行扫描命令
+    if (esp_cmd_line("AT+CWLAP\r\n", "+CWLAP:", tmpbuf, sizeof(tmpbuf), 5000, 1) != AT_CMD_DATA_GET_OK) {
+        LOG_E("Failed to scan WiFi networks\n");
+        return -1;
+    }
+    // 获取当前时间
+    time(&current_time);
+    // 解析扫描结果
+    str = tmpbuf;
+    while((line_start = strstr(str, "+CWLAP:")) != NULL && (ap_count < 20)){
+        str = line_start + strlen("+CWLAP:");
+        // 解析每一行的热点信息
+        wifi_ap_info_t *ap = &result->aps[ap_count];
+
+        //跳过第一个括号
+        while (*str && *str != '(') str++;
+        if (*str) str++; // 跳过 '('
+
+        // 解析加密方式
+        ap->auth_mode = at_atoi(str);
+        while( *str && *str != ',') str++;
+        if (*str) str++; // 跳过 ','
+
+        // 解析SSID
+        while(*str && *str != '"')str++;
+        if (*str) str++; // 跳过 '"'
+        char *ssid_start = str;
+        while(*str && *str != '"') str++;
+        if(*str){
+            int ssid_len = str - ssid_start;
+            if(ssid_len <sizeof(ap->ssid)){
+                strncpy(ap->ssid, ssid_start, ssid_len);
+                ap->ssid[ssid_len] = '\0'; // 确保字符串结束
+        }
+        str++; // 跳过 '"'
+        }
+        // 解析信号强度
+        while(*str && *str != ',') str++;
+        if (*str) str++; // 跳过 ','
+        ap->rssi = at_atoi(str);
+
+        // 解析MAC地址
+        while(*str && *str != ',') str++;
+        if (*str) str++; // 跳过 ','
+        while(*str && *str != '"') str++;
+        if (*str) str++; // 跳过 '"'
+        char *bssid_start = str;
+        while(*str && *str != '"')str++;
+        if(*str){
+            int bssid_len = str-bssid_start;
+            if (bssid_len < sizeof(ap->bssid)){
+                strncpy(ap->bssid, bssid_start, bssid_len);
+                ap->bssid[bssid_len] = '\0'; // 确保字符串结束
+            }
+            str ++; // 跳过 '"'
+        }
+
+        // 解析信道
+        while(*str && *str != ',')str++;
+        if (*str) str++; // 跳过 ','
+        ap->channel = at_atoi(str);
+
+        //设置扫描时间
+        ap->scan_time = current_time;
+
+        ap_count++;
+
+        //移动到下一行
+        while(*str && *str != '\n') str++;
+        if(*str) str++;
+
+    }
+    result->count = ap_count;
+
+    // 获取设备ID
+    PPItemRead("device_id", result->device_id, sizeof(result->device_id));
+    LOG_D("WiFi scan completed,found %d APs\n", result->count);
+    return 0;
+}
+/*
+********************************************************************************
+*Function  :esp_wifi_position_scan
+*Description : 定位用wifi扫描接口
+*Input       :无
+*Output      :
+*return      : 0成功，-1失败
+*Others      : 供定时调用或手动触发的扫描接口   27-05-2025
+********************************************************************************
+*/
+int esp_wifi_position_scan(void)
+{
+    static wifi_scan_result_t scan_result;
+
+    // 检查wifi是否已连接(STA模式下)
+    if(esp_ls_network() != ESP_NETWORK_STA){
+        LOG_E("WiFi is not connected in STA mode, cannot scan\n");
+        return -1;
+    }
+    // 执行扫描
+    if (esp_cwlap_scan_all(&scan_result) ==0) {
+        // 上报扫描结果
+        wifi_positioning_report(&scan_result);
+        return 0;
+    }
+    return -1;
+}
+/*
+**********************************************************************************
+*Function    : wifi_positioning_report
+*Description : 上报wifi定位数据
+*Input       : result - 扫描结果结构体
+*Output      :
+*Return      : 0 成功, -1 失败
+*Others      : 27-05-2025
+**********************************************************************************
+*/
+int wifi_positioning_report(wifi_scan_result_t *result)
+{
+    if(!result || result->count <= 0){
+        LOG_E("Invalid scan result or no APs found\n");
+        return -1;
+    }
+    
+   // 创建JSON数据并上报
+   return smart_wifi_positioning_report(result);
+}
 /*
 ********************************************************************************
 *Function    : esp_cmd_line_with_len

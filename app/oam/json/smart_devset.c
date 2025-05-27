@@ -700,5 +700,228 @@ s32_t devset_analy(cJSON* payload,smart_msg_t *psmsg,js_msg_t *to,void *arg)
     LOG_E("%s Unable to find command [%s]",__func__,cmd->valuestring);
     return 0;
 }
+/*
+**************************************************************************************
+*Function    :  smart_wifi_positioning_set
+*Description :  wifi定位设置
+*Input       :  
+*Output      :
+*Return      : 
+*Others      : 处理来自服务器的定位配置指令 27-05-2025 cjt add
+**************************************************************************************
+*/
+DEF_SETCMD_FN(smart_wifi_positioning_set)
+{
+    int result=SMART_FAIL;
+    cJSON* items;
+    u8_t enable;
+    u16_t scan_interval;
+    u8_t auto_report;
+
+    do{
+        // 解析启用状态
+        items = cJSON_GetObjectItem(data, "enable");
+        if (items == NULL || items->valuestring == NULL) {
+            LOG_E("%s enable field missing ", __func__);
+            break;
+        }
+        if (strcmp(items->valuestring, "on") == 0) {
+            enable = 1; // 启用
+        } else if (strcmp(items->valuestring, "off") == 0) {
+            enable = 0; // 禁用
+        } else {
+            LOG_E("%s invalid enable value:%s ", __func__, items->valuestring);
+            break;
+        }
+        // 解析扫描间隔
+        items = cJSON_GetObjectItem(data, "scan_interval");
+        if (items == NULL) {
+            scan_interval = 300; // 默认值为300秒
+        }else {
+            scan_interval = items->valueint;
+            if(scan_interval < 60) scan_interval = 60; // 最小值为60秒
+
+        }
+        // 解析自动上报状态
+        items = cJSON_GetObjectItem(data, "auto_report");
+        if(items == NULL || items->valuestring == NULL) {
+            LOG_E("%s auto_report field missing ", __func__);
+            auto_report = 0; // 默认值为0
+            break;
+        }else{
+            auto_report = (strcmp(items->valuestring, "on") == 0) ? 1 : 0; // 默认值为0
+        }
+        // 保存配置
+        PPItemWrite(PP_WIFI_POS_ENABLE, (u8_t*)&enable, PPItemSize(PP_WIFI_POS_ENABLE));
+        PPItemWrite(PP_WIFI_POS_SCAN_INTERVAL, (u8_t*)&scan_interval, PPItemSize(PP_WIFI_POS_SCAN_INTERVAL));
+        PPItemWrite(PP_WIFI_POS_AUTO_REPORT, (u8_t*)&auto_report, PPItemSize(PP_WIFI_POS_AUTO_REPORT));
+
+        // 启动或停止定位服务
+        if(enable){
+            wifi_positioning_service_start(scan_interval);
+        }else{
+            wifi_positioning_service_stop();
+        }
+
+        LOG_D("WiFi positioning set: enable=%d, scan_interval=%d, auto_report=%d",
+              enable, scan_interval, auto_report);
+        result = SMART_OK;
+    }while(0);
+    return devset_respond(CmdSetTable[offset].pname, result, psmsg, to, arg);
+}
+/*
+*****************************************************************************************************
+*Function    :  smart_wifi_positioning_trigger
+*Description :  手动触发wifi定位
+*Input       :
+*Output      :
+*Return      :
+*Others      : 处理来自服务器的手动触发扫描指令 27-05-2025 cjt add
+*****************************************************************************************************
+*/
+DEF_SETCMD_FN(smart_wifi_positioning_trigger)
+{
+    int result = SMART_FAIL;
+    
+    LOG_D("Manual WiFi positioning scan triggered");
+        // 执行扫描
+        if (esp_wifi_positioning_scan() == 0) {
+            result = SMART_OK;
+            LOG_D("WiFi positioning scan completed");
+        } else {
+            LOG_E("WiFi positioning scan failed");
+        }
+   
+
+    return devset_respond(CmdSetTable[offset].pname, result, psmsg, to, arg);
+}
+/*
+**************************************************************************************
+*Function    :  smart_wifi_positioning_get
+*Description :  获取wifi定位配置
+*Input       :
+*Output      :
+*Return      :
+*Others      :  27-05-2025 cjt add
+**************************************************************************************
+*/
+DEF_SETCMD_FN(smart_wifi_positioning_get)
+{
+    cJSON* subdata;
+    u8_t enable,auto_report;
+    u16_t scan_interval;
+
+    subdata = cJSON_CreateObject();
+
+    cJSON_AddStringToObject(subdata, "cmd", CmdSetTable[offset].pname);
+
+    // 读取配置
+    PPItemRead(PP_WIFI_POS_ENABLE, (u8_t*)&enable, PPItemSize(PP_WIFI_POS_ENABLE));
+    PPItemRead(PP_WIFI_POS_SCAN_INTERVAL, (u8_t*)&scan_interval, PPItemSize(PP_WIFI_POS_SCAN_INTERVAL));
+    PPItemRead(PP_WIFI_POS_AUTO_REPORT, (u8_t*)&auto_report, PPItemSize(PP_WIFI_POS_AUTO_REPORT));
+
+    cJSON_AddStringToObject(subdata, "enable", enable ? "on" : "off");
+    cJSON_AddNumberToObject(subdata, "scan_interval", scan_interval);
+    cJSON_AddStringToObject(subdata, "auto_report", auto_report ? "on" : "off");
+
+    return smart_response_send("/dev/get", subdata, psmsg, SMART_OK, to, arg);
+
+}
+/*
+*******************************************************************************************
+*wifi 定位服务管理
+*******************************************************************************************
+*/
+static rt_timer_t wifi_pos_timer = RT_NULL;
+static u8_t wifi_pos_service_running = 0;
 
 
+/*
+*******************************************************************************************
+*Function    :  wifi_positioning_timer_callback
+*Description :  wifi定位定时器回调函数
+*Input       :  
+*Output      :
+*Return      :
+*Others      :  27-05-2025 cjt add
+*******************************************************************************************
+*/
+static void wifi_positioning_timer_callback(void *parameter)
+{
+
+    if(wifi_pos_service_running){
+        esp_wifi_positioning_scan();
+    }
+}
+/*
+*******************************************************************************************
+*Function    :  wifi_positioning_service_start
+*Description :  启动wifi定位服务
+*Input       :
+*Output      :
+*Return      : 0 - 成功 -1 - 失败
+*Others      :  27-05-2025 cjt add
+*******************************************************************************************
+*/
+int wifi_positioning_service_start(u16_t scan_interval)
+{
+    if(wifi_pos_timer == RT_NULL){
+        wifi_pos_timer = rt_timer_create("wifi_pos", wifi_positioning_timer_callback, RT_NULL, scan_interval * RT_TICK_PER_SECOND, RT_TIMER_FLAG_PERIODIC);
+        
+        if(wifi_pos_timer == RT_NULL){
+            LOG_E("Failed to create WiFi positioning timer");
+            return -1;
+        }
+    }
+
+    // 更新定时器周期
+    rt_timer_control(wifi_pos_timer, RT_TIMER_CTRL_SET_TIME, (void *)(scan_interval * RT_TICK_PER_SECOND));
+    wifi_pos_service_running = 1;
+    rt_timer_start(wifi_pos_timer);
+    LOG_D("WiFi positioning service started with interval %d seconds", scan_interval);
+    return 0;
+}
+/*
+***********************************************************************************************************
+*Function    :  wifi_positioning_service_stop
+*Description :  停止wifi定位服务
+*Input       :
+*Output      :
+*Return      : 
+*Others      :  27-05-2025 cjt add
+***********************************************************************************************************
+*/
+void wifi_positioning_service_stop(void)
+{
+
+    wifi_pos_service_running = 0;
+    if(wifi_pos_timer != RT_NULL){
+        rt_timer_stop(wifi_pos_timer);
+    }
+    LOG_D("WiFi positioning service stopped");
+}
+/*
+**********************************************************************************************************
+*Function    :  wifi_positioning_service_init
+*Description :  初始化wifi定位服务
+*Input       :
+*Output      :
+*Return      : 
+*Others      : 系统启动时调用  27-05-2025 cjt add
+**********************************************************************************************************
+*/
+int wifi_positioning_service_init(void)
+{
+    u8_t enable;
+    u16_t scan_interval;
+
+    // 读取配置
+    PPItemRead(PP_WIFI_POS_ENABLE, (u8_t*)&enable, PPItemSize(PP_WIFI_POS_ENABLE));
+    PPItemRead(PP_WIFI_POS_SCAN_INTERVAL, (u8_t*)&scan_interval, PPItemSize(PP_WIFI_POS_SCAN_INTERVAL));
+
+    // 如果启用，启动定位服务
+    if(enable && scan_interval >0){
+       return wifi_positioning_service_start(scan_interval);   
+    }
+    return 0;
+}

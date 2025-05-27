@@ -24,6 +24,8 @@
 #define DBG_LVL DBG_LOG   
 #include <rtdbg.h>
 
+RTC_HandleTypeDef hrtc;
+void MX_RTC_Init(void);
 /*
 ********************************************************************************
 ********************************************************************************
@@ -106,7 +108,7 @@ int app_init(void)
 int main(void)
 {
     app_init();
-
+    
 
     return RT_EOK;
 }

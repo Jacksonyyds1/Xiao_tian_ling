@@ -16,6 +16,10 @@ DEVGET_DEF("/rtinfo"                , smart_rtinfo_get)
 DEVGET_DEF("/mqtt/get"              , smart_mqtt_get) 
 DEVGET_DEF("/elec/fence"            , smart_elecfence_get) 
 
+/* WiFi定位查询命令 */
+DEVGET_DEF("/wifi/positioning/get"    , smart_wifi_positioning_get)     /* 获取WiFi定位配置 */
+DEVGET_DEF("/wifi/positioning/status" , smart_wifi_positioning_status)  /* 获取WiFi定位状态 */
+
 /******************************************************************************/
 /*                               DEVSET_DEF                                   */
 /******************************************************************************/
@@ -37,7 +41,9 @@ DEVSET_DEF("/reboot"                , smart_reboot)
 DEVSET_DEF("/mqtt/set"              , smart_mqtt_set)
 DEVSET_DEF("/find/me"               , smart_findme)
 
-
+/* WiFi定位设置命令 */
+DEVSET_DEF("/wifi/positioning/set"    , smart_wifi_positioning_set)     /* WiFi定位功能设置 */
+DEVSET_DEF("/wifi/positioning/trigger", smart_wifi_positioning_trigger) /* 手动触发WiFi定位扫描 */
 #undef ACTION_DEF
 #undef DEVGET_DEF
 #undef DEVSET_DEF

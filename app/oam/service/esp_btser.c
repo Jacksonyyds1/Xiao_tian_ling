@@ -80,11 +80,12 @@ static int esp_btser_recv_process(void *arg)
 //    if( esp_ls_atmode() == ESP_MODE_SPP ){
 //        return -1;
 //    }
-
+    if(esp_ls_atmode() == ESP_MODE_SPP){
     while( at_getchar(client, &ch, 1000, 1) == 0){
         rt_kprintf("0X%02X ",ch);
         lan_msg_recv( &BleMsg, ch);
     }
+}
     return 0;
 }
 /*

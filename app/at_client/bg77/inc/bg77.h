@@ -162,4 +162,7 @@ void bg77_airmode_config(int mode);
 int bg77_init(void);
 
 socket_t *bg77_get_socket(int sd, int type);
+
+void bg77_power_ctrl2(void);
+
 #endif /* BG77_H_ */

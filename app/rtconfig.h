@@ -317,7 +317,7 @@
 #define BSP_USING_UART1
 // #define BSP_USING_UART2
 #define BSP_USING_LPUART1
-// #define BSP_USING_UART4
+#define BSP_USING_UART4
 //#define RT_SERIAL_USING_DMA
 /* Board extended module Drivers */
 

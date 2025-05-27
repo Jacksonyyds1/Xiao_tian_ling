@@ -43,11 +43,11 @@ PPDEF(PP_DEVICE_ID        ,  64  , "4F0024594E501220363736" )              /* �
 
 /* 通用 */                       
 PPDEF(PP_MQT_PRO          ,  1   , "0" )                 /* 协议选择 */
-PPDEF(PP_MQT_URL          ,  128 , "a1qc8sz6uwatlh-ats.iot.us-east-1.amazonaws.com" ) /* IP地址 */
+PPDEF(PP_MQT_URL          ,  128 , "aicrdfmr9pphp-ats.iot.ap-east-1.amazonaws.com" ) /* IP地址 *//* a1qc8sz6uwatlh-ats.iot.us-east-1.amazonaws.com*/
 PPDEF(PP_MQT_PORT         ,  2   , "8883" )              /* 端口号 */
 PPDEF(PP_MQT_USERNAME     ,  128 , " " ) /* username */
 PPDEF(PP_MQT_PASSWD       ,  64  , " " )        /* passwd */
-PPDEF(PP_MQT_CLIENTID     ,  64  , "ClientID" )       /* clientId */
+PPDEF(PP_MQT_CLIENTID     ,  64  , "4F0024594E501220363736" )       /* clientId *//*客户端ID*/
 PPDEF(PP_MQT_TICK         ,  2   , "60*6" )         /* heart tick */
 /*
 ********************************************************************************
@@ -78,4 +78,17 @@ PPDEF(PP_RESERVE5        ,  50  , " " )           /* 预留长度 5字节*/
 ********************************************************************************
 ********************************************************************************
 */
- 
+ /*
+ **********************************************************************************
+ *wifi 定位相关配置参数
+ **********************************************************************************
+ */
+PPDEF(PP_WIFI_POS_ENABLE ,  1   , "0")            /* wifi 定位服务开关 */
+PPDEF(PP_WIFI_POS_SCAN_INTERVAL,  2   , "300")          /* wifi 定位扫描间隔时间 */
+PPDEF(PP_WIFI_POS_AUTO_REPORT,  1   , "0")          /* wifi 定位自动上报开关  0关闭 1开启*/
+PPDEF(PP_WIFI_POS_MIN_RSSI    , 1   , "-90")         /* 最小信号强度阈值 */
+PPDEF(PP_WIFI_POS_MAX_APS     , 1   , "20")          /* 最大扫描AP数量 */
+PPDEF(PP_WIFI_POS_LOCATION_X  , 8   , "0.0")         /* 当前位置X坐标(米) */
+PPDEF(PP_WIFI_POS_LOCATION_Y  , 8   , "0.0")         /* 当前位置Y坐标(米) */
+PPDEF(PP_WIFI_POS_BUILDING_ID , 32  , "")            /* 建筑物ID */
+PPDEF(PP_WIFI_POS_FLOOR_ID    , 16  , "")            /* 楼层ID */

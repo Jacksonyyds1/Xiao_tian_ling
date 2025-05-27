@@ -114,6 +114,17 @@ static void bg77_power_ctrl(int flag)
         rt_pin_write(BG77_POWER_PIN, PIN_LOW);
     }
 }
+
+//************************************************************
+//BA77_POWER_CONTROL——GPIO_PA15
+
+//***********************************************************
+void bg77_power_ctrl2(void){
+
+    rt_pin_mode(BG77_POWER_BAT_PIN,  PIN_MODE_OUTPUT);
+    rt_pin_write(BG77_POWER_BAT_PIN, PIN_HIGH);
+   }
+
 /*
 ********************************************************************************
 *Function    : bg77_reset
@@ -1547,10 +1558,9 @@ MSH_CMD_EXPORT(at, RT-Thread AT component cli: at <client>);
 */
 static void bg77_thread_entry(at_client_t client)
 {
-    rt_tick_t timeout_tick;
-
+    rt_tick_t timeout_tick;       
     bg77_module_init();
-
+  
     while (1) {
         timeout_tick = bg77_status_monitor();
 
@@ -1634,6 +1644,7 @@ static int __bg77_init(const char *dev_name)
 int bg77_init(void)
 {
     at_memset(&bg77, 0, sizeof(bg77));
+
     __bg77_init("uart4");
     return RT_EOK;
 }

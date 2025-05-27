@@ -28,6 +28,7 @@
 #define LOG_TAG             "drv.rtc"
 #include <drv_log.h>
 
+
 /* 私有函数声明区域 */
 static void Lsm6ds3_Init(void);
 static void Lsm6ds3_WriteByte(uint8_t reg, uint8_t data);
@@ -160,8 +161,7 @@ static void Lsm6ds3_Init(void)
 {
     uint8_t whoAmI = Lsm6ds3_ReadByte(LSM6DS3_WHO_AM_I);
     
-    LOG_I("Lsm6ds3_Init[G-SensorId] -> 0x%x", whoAmI);
-    rt_kprintf("Lsm6ds3_Init[G-SensorId] -> 0x%x", whoAmI);
+    LOG_E("Lsm6ds3_Init[G-SensorId] -> 0x%x", whoAmI);
     if(whoAmI != LSM6DS3_DeviceID)
     {
         LOG_E("read who am i failed!");
@@ -189,55 +189,8 @@ static void Lsm6ds3_Init(void)
     Lsm6ds3_WriteByte(LSM6DS3_TAP_THS_6D, 0x40);
     Lsm6ds3_WriteByte(LSM6DS3_CTRL8_XL, 0x01);
 
-    LOG_I("Lsm6ds3 init successfule!");
-    rt_kprintf("Lsm6ds3 init successfule!");
+    LOG_E("Lsm6ds3 init successfule!");
 }
-//cjt 25-04-28 add 
-void Lsm6ds_WriteByte(uint8_t reg,uint8_t data ){
-	
-   uint8_t flag;
-	uint8_t buff[2]={0};
-	buff[0]= data;
-  flag = HAL_I2C_Mem_Write(&hi2c2,0xd4,reg,0x01,&buff[0],1,1000);
-	if(flag !=HAL_OK )
-	{
-		rt_kprintf("error_code:%d\n",flag);
-	
-	}else{
-	
-	   rt_kprintf("code_ok:%d\n",flag);
-	}
-
-}
-
-//cjt 25-04-28 add 
-// 初始化 LSM6DS
-void test_Lsm6ds_Init(void) {
-    // 加速度计52Hz
-    Lsm6ds_WriteByte(LSM6DS3_CTRL1_XL, 0x20);
-    // 使能加速度计 x, y, z 轴
-    Lsm6ds_WriteByte(LSM6DS3_CTRL9_XL, 0x38);
-    // 使能加速度计中断
-    Lsm6ds_WriteByte(LSM6DS3_INT1_CTRL, 0x01);
-    // 陀螺仪208Hz
-    Lsm6ds_WriteByte(LSM6DS3_CTRL2_G, 0x5C);
-    // 频率设置
-    Lsm6ds_WriteByte(LSM6DS3_CTRL2_G, 0x5C);
-    // 使能陀螺仪 x, y, z 轴
-    Lsm6ds_WriteByte(LSM6DS3_CTRL10_C, 0x38);
-
-    Lsm6ds_WriteByte(LSM6DS3_TAP_CFG, 0x90);
-    Lsm6ds_WriteByte(LSM6DS3_WAKE_UP_DUR, 0x00);
-    Lsm6ds_WriteByte(LSM6DS3_WAKE_UP_THS, 0x02);
-    Lsm6ds_WriteByte(LSM6DS3_MD1_CFG, 0x20);
-
-    Lsm6ds_WriteByte(LSM6DS3_TAP_THS_6D, 0x40);
-    Lsm6ds_WriteByte(LSM6DS3_CTRL8_XL, 0x01);
-
-    printf("Lsm6ds init successful!\n");
-}
-
-MSH_CMD_EXPORT(test_Lsm6ds_Init, test Lsm6ds3 init);
 MSH_CMD_EXPORT(Lsm6ds3_Init,  test Lsm6ds3 init );
 /*
 ********************************************************************************
@@ -286,7 +239,7 @@ int16_t *Lsm6ds3_ReadAngularRateRaw(int16_t *pbuf)
         g_lsm6ds3.m_dataBuf.data_raw_angular_rate[1] = (buf[3] << 8) | buf[2];
         g_lsm6ds3.m_dataBuf.data_raw_angular_rate[2] = (buf[5] << 8) | buf[4];
     }
-    
+   
     if(NULL != pbuf)
         memcpy(pbuf, buf, sizeof(buf));
     
@@ -312,7 +265,7 @@ int16_t *Lsm6ds3_ReadAccelerationRaw(int16_t *pbuf)
         g_lsm6ds3.m_dataBuf.data_raw_acceleration[1] = (buf[3] << 8) | buf[2];
         g_lsm6ds3.m_dataBuf.data_raw_acceleration[2] = (buf[5] << 8) | buf[4];
     }
-    
+   
     if(NULL != pbuf)
         memcpy(pbuf, buf, sizeof(buf));
     
@@ -336,7 +289,8 @@ int16_t *Lsm6ds3_ReadTemperatureRaw(int16_t *pbuf)
         Lsm6ds3_ReadMultiple(LSM6DS3_OUT_TEMP_L, LSM6DS3_OUT_TEMP_H, buf);
         g_lsm6ds3.m_dataBuf.data_raw_temperature = (buf[1] << 8) | buf[0];
     }
-    
+
+
     if(NULL != pbuf)
         memcpy(pbuf, buf, sizeof(buf));
     

@@ -6,7 +6,7 @@
  */
 #include "app_lib.h"
 #include "version.h"
-
+#include "smart_port.h"
 
 #define DBG_TAG "smart"
 #define DBG_LVL DBG_LOG 
@@ -292,6 +292,75 @@ void smart_ota_response(int ret)
     smart_oam_send("/dev/set",NULL,data,result);
 }
 
+/*
+*******************************************************************************
+*Function    :  smart_wifi_positioning_report
+*Description :  wifi定位上报
+*Input       :  result - 扫描结果结构体
+*Output      :
+*Return      : 0 - 成功 -1 - 失败
+*Others      : 27-05-2025 cjt add
+*******************************************************************************
+*/
+int smart_wifi_positioning_report(wifi_scan_result_t *result)
+{
+    cJSON* data;
+    cJSON* wifi_list;
+    cJSON* wifi_item;
 
+    if(!result || result->count ==0){
+        return -1;
+    }
+
+    data = cJSON_CreateObject();
+    if(!data){
+        return -1;
+    }
+
+    // 基本信息
+    cJSON_AddStringToObject(data,"cmd", "/wifi/positionsing");
+    cJSON_AddStringToObject(data,"device_id", result->device_id);
+    cJSON_AddNumberToObject(data,"timestamp", time(NULL));
+    cJSON_AddNumberToObject(data,"ap_count", result->count);
+
+    // GPS坐标(如果有的话)
+    if(result->latitude != 0.0 && result->longitude != 0.0){
+
+        cJSON_AddNumberToObject(data,"latitude", result->latitude);
+        cJSON_AddNumberToObject(data,"longitude", result->longitude);
+    }
+
+    // WiFi热点列表
+    wifi_list = cJSON_CreateArray();
+    if(!wifi_list){
+        cJSON_Delete(data);
+        return -1;
+    }
+
+    for(int i = 0; i<result->count && i<20; i++){
+
+        wifi_item = cJSON_CreateObject();
+        if(!wifi_item){
+            cJSON_Delete(data);
+            cJSON_Delete(wifi_list);
+            return -1;
+        }
+
+        // 填充热点信息
+        cJSON_AddStringToObject(wifi_item, "ssid", result->aps[i].ssid);
+        cJSON_AddStringToObject(wifi_item, "mac", result->aps[i].mac);
+        cJSON_AddNumberToObject(wifi_item, "rssi", result->aps[i].rssi);
+        cJSON_AddNumberToObject(wifi_item, "channel", result->aps[i].channel);
+        cJSON_AddNumberToObject(wifi_item, "auth_mode", result->aps[i].auth_mode);
+
+        // 添加到列表
+        cJSON_AddItemToArray(wifi_list, wifi_item);
+    }
+    cJSON_AddItemToObject(data, "wifi_aps", wifi_list);
+    // 发送数据
+    int ret = smart_oam_send("/dev/rpt", NULL, data, SMART_OK);
+    LOG_D("WiFi positioning report sent, result: %d", ret);
+    return ret;
+}
 
 
