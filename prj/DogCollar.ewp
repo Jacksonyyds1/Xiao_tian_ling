@@ -2266,6 +2266,9 @@
                     <file>
                         <name>$PROJ_DIR$\..\app\at_client\esp\inc\esp_tcpip.h</name>
                     </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\app\at_client\esp\inc\esp_wifi.h</name>
+                    </file>
                 </group>
                 <file>
                     <name>$PROJ_DIR$\..\app\at_client\esp\esp.c</name>

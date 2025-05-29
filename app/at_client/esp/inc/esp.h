@@ -58,7 +58,13 @@ typedef enum {
     ESP_CWMODE_AP,
     ESP_CWMODE_STA_AP
 }cmd_cwmode_t;
-
+/*28-05-2025 cjt add*/
+typedef enum {
+    ESP_NETWORK_NONE = 0,
+    ESP_NETWORK_STA = 2,  // Based on esp_cwstate_detect, connected state is 2
+    ESP_NETWORK_AP = 3,
+    ESP_NETWORK_STA_AP = 4
+} esp_network_status_t;
 /*
 ********************************************************************************
 ********************************************************************************

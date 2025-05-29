@@ -7,6 +7,7 @@
 #include "app_lib.h"
 #include "version.h"
 #include "smart_port.h"
+#include "esp_wifi.h"
 
 #define DBG_TAG "smart"
 #define DBG_LVL DBG_LOG 
@@ -348,7 +349,7 @@ int smart_wifi_positioning_report(wifi_scan_result_t *result)
 
         // 填充热点信息
         cJSON_AddStringToObject(wifi_item, "ssid", result->aps[i].ssid);
-        cJSON_AddStringToObject(wifi_item, "mac", result->aps[i].mac);
+        cJSON_AddStringToObject(wifi_item, "mac", result->aps[i].bssid);
         cJSON_AddNumberToObject(wifi_item, "rssi", result->aps[i].rssi);
         cJSON_AddNumberToObject(wifi_item, "channel", result->aps[i].channel);
         cJSON_AddNumberToObject(wifi_item, "auth_mode", result->aps[i].auth_mode);

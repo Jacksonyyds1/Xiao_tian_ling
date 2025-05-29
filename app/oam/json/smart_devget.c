@@ -243,6 +243,54 @@ DEF_GETCMD_FN(smart_elecfence_get)
 }
 /*
 ********************************************************************************
+*Function    :  smart_wifi_positioning_status
+*Description :  获取WiFi定位状态信息
+*Input       :
+*Output      :
+*Return      :
+*Others      : 27-05-2025 cjt add
+********************************************************************************
+*/
+DEF_GETCMD_FN(smart_wifi_positioning_status)
+{
+    cJSON* subdata;
+    u8_t enable, auto_report;
+    u16_t scan_interval;
+    u8_t service_running = 0;
+    u32_t last_scan_time = 0;
+    u16_t last_ap_count = 0;
+
+    subdata = cJSON_CreateObject();
+
+    cJSON_AddStringToObject(subdata,"cmd", CmdGetTable[offset].pname);
+
+    // Read configuration
+    PPItemRead(PP_WIFI_POS_ENABLE, &enable, PPItemSize(PP_WIFI_POS_ENABLE));
+    PPItemRead(PP_WIFI_POS_SCAN_INTERVAL, &scan_interval, PPItemSize(PP_WIFI_POS_SCAN_INTERVAL));
+    PPItemRead(PP_WIFI_POS_AUTO_REPORT, &auto_report, PPItemSize(PP_WIFI_POS_AUTO_REPORT));
+
+    // Add configuration status
+    cJSON_AddStringToObject(subdata, "enable", enable ? "on" : "off");
+    cJSON_AddNumberToObject(subdata, "scan_interval", scan_interval);
+    cJSON_AddStringToObject(subdata, "auto_report", auto_report ? "on" : "off");
+
+    // Add service status
+    service_running = enable;
+    cJSON_AddStringToObject(subdata, "service_status", service_running ? "running" : "stopped");
+
+    // Add last scan information (placeholder values)
+    cJSON_AddNumberToObject(subdata, "last_scan_time", last_scan_time);
+    cJSON_AddNumberToObject(subdata, "last_ap_count", last_ap_count);
+
+    // Add WiFi connection status
+    int wifi_status = esp_ls_network();
+    cJSON_AddStringToObject(subdata, "wifi_connected", (wifi_status == 2) ? "yes" : "no");
+    cJSON_AddNumberToObject(subdata, "wifi_status_code", wifi_status);
+
+    return smart_response_send("/dev/get", subdata, psmsg, 0, to, arg);
+}
+/*
+********************************************************************************
 *Function    :  devget_analy 
 *Description :  dev-get 系列解析函数
 *Input       :

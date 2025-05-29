@@ -111,6 +111,7 @@ void esp_test_cmd(int argc,char** argv)
     }
 
     if(strcmp(argv[1], "scan") == 0) {
+        esp_cwmode_config(1); // 设置为 Station 模式
         esp_wifi_position_scan();
     }
 

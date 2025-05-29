@@ -6,7 +6,7 @@
  */
 #include "app_lib.h"
 #include "version.h"
-
+#include "esp_wifi.h"
 /*
 ********************************************************************************
 ********************************************************************************
@@ -785,7 +785,7 @@ DEF_SETCMD_FN(smart_wifi_positioning_trigger)
     
     LOG_D("Manual WiFi positioning scan triggered");
         // 执行扫描
-        if (esp_wifi_positioning_scan() == 0) {
+        if (esp_wifi_position_scan() == 0) {
             result = SMART_OK;
             LOG_D("WiFi positioning scan completed");
         } else {
@@ -850,7 +850,7 @@ static void wifi_positioning_timer_callback(void *parameter)
 {
 
     if(wifi_pos_service_running){
-        esp_wifi_positioning_scan();
+        esp_wifi_position_scan();
     }
 }
 /*

@@ -58,7 +58,7 @@ extern esp_at_t esp;
 */
 int esp_cwlap_scan_all(wifi_scan_result_t *result)
 {
-    char tmpbuf[2048] = {0};
+    char tmpbuf[128] = {0};
     char *str , *line_start;
     int ap_count = 0;
     time_t current_time;
@@ -70,15 +70,17 @@ int esp_cwlap_scan_all(wifi_scan_result_t *result)
     memset(result, 0, sizeof(wifi_scan_result_t));
 
     // 执行扫描命令
-    if (esp_cmd_line("AT+CWLAP=\"SW_TEST_TEAM\"\r\n", "+CWLAP:", tmpbuf, sizeof(tmpbuf), 5000, 1) != AT_CMD_DATA_GET_OK) {
+    if (esp_cmd_line("AT+CWLAP\r\n", "+CWLAP:", tmpbuf, sizeof(tmpbuf), 10000, 1) != AT_CMD_DATA_GET_OK) {
         LOG_E("Failed to scan WiFi networks\n");
         //return -1;
     }
+   
+    rt_kprintf("Received scan result: %s\n", tmpbuf);
     // 获取当前时间
     time(&current_time);
     // 解析扫描结果
     str = tmpbuf;
-    while((line_start = strstr(str, "+CWLAP:")) != NULL && (ap_count < 20)){
+    while((line_start = strstr(str, "+CWLAP:")) != NULL && (ap_count < 5)){
         str = line_start + strlen("+CWLAP:");
         // 解析每一行的热点信息
         wifi_ap_info_t *ap = &result->aps[ap_count];
@@ -142,6 +144,9 @@ int esp_cwlap_scan_all(wifi_scan_result_t *result)
 
     }
     result->count = ap_count;
+    rt_kprintf("=====WiFi scan result=====\n");
+    rt_kprintf("Found %d APs:\n", result->count);
+
 
     for(int i = 0; i < result->count; i++){
         rt_kprintf("AP %d: SSID: %s, BSSID: %s, RSSI: %d, Channel: %d, Auth Mode: %d, Scan Time: %ld\n",
@@ -155,6 +160,8 @@ int esp_cwlap_scan_all(wifi_scan_result_t *result)
 
 
     }
+
+    rt_kprintf("=====End of WiFi scan result=====\n");
 
     // 获取设备ID
     PPItemRead("device_id", result->device_id, sizeof(result->device_id));
