@@ -23,6 +23,7 @@
 #include "at_client.h"
 #include "esp.h"
 #include "esp_cmd.h" //modify by cjt 27-05-20025
+#include "esp_wifi.h"
 
 #define DBG_TAG "esp"
 #define DBG_LVL DBG_LOG   //DBG_LOG
@@ -41,31 +42,8 @@ extern esp_at_t esp;
 #define get_version_ptr()   (&esp.vs)    
 #define get_lap_ptr()       (&esp.lap)    
 #define get_sta_ptr()       (&esp.wifista) 
-/*
-********************************************************************************
-*wifi 热点信息结构体  27-05-2025
-********************************************************************************
-*/ 
-typedef struct{
-    char ssid[33];       // 热点名称
-    char bssid[18];      // Mac地址
-    int rssi;          // 信号强度
-    int channel;       // 信道
-    int auth_mode;     // 加密方式
-    time_t scan_time;  // 扫描时间戳
-} wifi_ap_info_t;
-/*
-********************************************************************************
-*wifi 扫描结果结构体  27-05-2025
-********************************************************************************
-*/
-typedef struct{
-    wifi_ap_info_t aps[20]; // 存储最多20个热点信息
-    int count;              //实际扫描到的热点数量
-    double latitude;         // 当前位置纬度（如果有GPS）
-    double longitude;        // 当前位置经度（如果有GPS）
-    char device_id[33]; // 设备ID
-} wifi_scan_result_t;
+
+
 /*
 ********************************************************************************
 *Function    : esp_cwlap_scan_all
@@ -87,14 +65,14 @@ int esp_cwlap_scan_all(wifi_scan_result_t *result)
 
     if(!result){
         LOG_E("Invalid result pointer\n");
-        return -1;
+      //  return -1;
     }
     memset(result, 0, sizeof(wifi_scan_result_t));
 
     // 执行扫描命令
-    if (esp_cmd_line("AT+CWLAP\r\n", "+CWLAP:", tmpbuf, sizeof(tmpbuf), 5000, 1) != AT_CMD_DATA_GET_OK) {
+    if (esp_cmd_line("AT+CWLAP=\"SW_TEST_TEAM\"\r\n", "+CWLAP:", tmpbuf, sizeof(tmpbuf), 5000, 1) != AT_CMD_DATA_GET_OK) {
         LOG_E("Failed to scan WiFi networks\n");
-        return -1;
+        //return -1;
     }
     // 获取当前时间
     time(&current_time);
@@ -165,6 +143,19 @@ int esp_cwlap_scan_all(wifi_scan_result_t *result)
     }
     result->count = ap_count;
 
+    for(int i = 0; i < result->count; i++){
+        rt_kprintf("AP %d: SSID: %s, BSSID: %s, RSSI: %d, Channel: %d, Auth Mode: %d, Scan Time: %ld\n",
+               i + 1,
+               result->aps[i].ssid,
+               result->aps[i].bssid,
+               result->aps[i].rssi,
+               result->aps[i].channel,
+               result->aps[i].auth_mode,
+               result->aps[i].scan_time);
+
+
+    }
+
     // 获取设备ID
     PPItemRead("device_id", result->device_id, sizeof(result->device_id));
     LOG_D("WiFi scan completed,found %d APs\n", result->count);
@@ -185,10 +176,10 @@ int esp_wifi_position_scan(void)
     static wifi_scan_result_t scan_result;
 
     // 检查wifi是否已连接(STA模式下)
-    if(esp_ls_network() != ESP_NETWORK_STA){
+   /*  if(esp_ls_network() != ESP_NETWORK_STA){
         LOG_E("WiFi is not connected in STA mode, cannot scan\n");
         return -1;
-    }
+    } */
     // 执行扫描
     if (esp_cwlap_scan_all(&scan_result) ==0) {
         // 上报扫描结果

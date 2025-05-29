@@ -102,3 +102,17 @@ void esp_cmd(int argc, char** argv)
     }
 }   
 MSH_CMD_EXPORT(esp_cmd,esp_cmd); 
+// 测试wifi扫描，ap数据提取测试函数
+void esp_test_cmd(int argc,char** argv)
+{
+    if(argc <2){
+        rt_kprintf("Please input 'scan' \n");
+        return;
+    }
+
+    if(strcmp(argv[1], "scan") == 0) {
+        esp_wifi_position_scan();
+    }
+
+}
+MSH_CMD_EXPORT(esp_test_cmd,esp_test_cmd);
